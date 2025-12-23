@@ -1,2 +1,57 @@
-<h1>Market Data Dashboard</h1>
-<p>Loading real-time data...</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Data | Xiaoni.xyz</title>
+    <style>
+        body {
+            background-color: #0e1117;
+            color: #fafafa;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .terminal-box {
+            border: 1px solid #333;
+            padding: 40px;
+            border-radius: 8px;
+            background: #161b22;
+            text-align: left;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            max-width: 600px;
+        }
+        h1 { color: #00e676; margin-top: 0; }
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 20px;
+            background-color: #00e676;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+        a { color: #58a6ff; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="terminal-box">
+        <p style="color: #8b949e;">root@xiaoni-data:~$ ./init_dashboard.sh</p>
+        <h1>SYSTEM ONLINE</h1>
+        <p>>> Connection established to data.xiaoni.xyz</p>
+        <p>>> Status: <span style="color: #d2a8ff;">Modules Loading...</span></p>
+        <br>
+        <p>The Quantitative Trading Dashboard is currently being deployed.</p>
+        <p>Connecting to Python runtime environment...</p>
+        <br>
+        <p>
+            <span style="color: #8b949e;">[Return to HQ]</span> 
+            <a href="https://xiaoni.xyz">cd ..</a>
+        </p>
+        <div class="cursor"></div>
+    </div>
+</body>
+</html>
