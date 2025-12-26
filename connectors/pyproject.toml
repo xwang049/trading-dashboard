@@ -1,0 +1,18 @@
+[project]
+name = "trading-connectors"
+version = "0.1.0"
+description = "数据源连接器"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "trading-core",  # 依赖 core
+    "requests>=2.31",
+    "pandas>=2.0",
+]
+
+[tool.uv.sources]
+trading-core = { workspace = true }
+
+[build-system]
+requires = ["uv_build>=0.9.18,<0.10.0"]
+build-backend = "uv_build"

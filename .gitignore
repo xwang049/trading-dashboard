@@ -1,9 +1,59 @@
+# --- 🔒 安全隐患 (绝对不能传) ---
+.env
+.env.*
+! .env.example
+secrets.json
+
+# --- 🐍 Python 编译/运行文件 ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# --- ⚡ UV / 虚拟环境 ---
+# uv 创建的虚拟环境文件夹
+.venv/
+venv/
+env/
+ENV/
+
+# 注意：uv.lock 通常建议提交，以保证团队/服务器依赖版本一致
+# 如果你不想提交锁文件，可以把下面这行取消注释
+# uv.lock
+
+# --- 🖥️ IDE / 编辑器配置 ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- 💻 操作系统垃圾文件 ---
 .DS_Store
 Thumbs.db
+ehthumbs.db
+Desktop.ini
 
-.vscode/
-
-__pycache__/
-*.pyc
-.ipynb_checkpoints/
+# --- 📊 本地日志和临时数据 ---
 *.log
+logs/
+temp/
+# 如果你以后下载了 csv 到本地做测试，可以把 data 文件夹也忽略
+data/

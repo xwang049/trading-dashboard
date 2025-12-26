@@ -1,0 +1,11 @@
+# /pyproject.toml (根目录)
+
+[project]
+name = "trading-dashboard-root"
+version = "0.1.0"
+description = "Dashboard monorepo"
+requires-python = ">=3.12"
+dependencies = [] # 根目录通常不装代码依赖，只作为管理层
+
+[tool.uv.workspace]
+members = ["core", "connectors", "backend"]
