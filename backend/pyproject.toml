@@ -10,6 +10,8 @@ dependencies = [
     "trading-core",
     "trading-connectors",
     "python-dotenv>=1.2.1",
+    "redis>=7.1.0",
+    "websockets>=15.0.1",
 ]
 
 [tool.uv.sources]

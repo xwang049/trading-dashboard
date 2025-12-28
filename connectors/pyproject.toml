@@ -8,6 +8,8 @@ dependencies = [
     "trading-core",  # 依赖 core
     "requests>=2.31",
     "pandas>=2.0",
+    "redis>=7.1.0",
+    "websocket-client>=1.9.0",
 ]
 
 [tool.uv.sources]
