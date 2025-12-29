@@ -1,57 +1,123 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Market Data | Xiaoni.xyz</title>
+    <title>CurveSeries Trading Dashboard</title>
+    
+    <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
+    
     <style>
-        body {
-            background-color: #0e1117;
-            color: #fafafa;
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .terminal-box {
-            border: 1px solid #333;
-            padding: 40px;
-            border-radius: 8px;
-            background: #161b22;
-            text-align: left;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            max-width: 600px;
-        }
-        h1 { color: #00e676; margin-top: 0; }
-        .cursor {
-            display: inline-block;
-            width: 10px;
-            height: 20px;
-            background-color: #00e676;
-            animation: blink 1s infinite;
-        }
-        @keyframes blink { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
-        a { color: #58a6ff; text-decoration: none; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 20px; background-color: #f5f8fa; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        .controls { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; gap: 10px; margin-bottom: 20px; align-items: center; }
+        input[type="text"] { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: monospace; }
+        button { padding: 10px 20px; background-color: #2962ff; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #1e4bd8; }
+        
+        #chart-container { width: 100%; height: 600px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative; }
+        .loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; color: #666; font-size: 1.2em; }
     </style>
 </head>
 <body>
-    <div class="terminal-box">
-        <p style="color: #8b949e;">root@xiaoni-data:~$ ./init_dashboard.sh</p>
-        <h1>SYSTEM ONLINE</h1>
-        <p>>> Connection established to data.xiaoni.xyz</p>
-        <p>>> Status: <span style="color: #d2a8ff;">Modules Loading...</span></p>
-        <br>
-        <p>The Quantitative Trading Dashboard is currently being deployed.</p>
-        <p>Connecting to Python runtime environment...</p>
-        <br>
-        <p>
-            <span style="color: #8b949e;">[Return to HQ]</span> 
-            <a href="https://xiaoni.xyz">cd ..</a>
-        </p>
-        <div class="cursor"></div>
+
+<div class="container">
+    <div class="controls">
+        <input type="text" id="equationInput" value='roll_month(Swap_GO_10_EW_2020F.Close,"1")' placeholder="输入 CurveSeries 公式...">
+        <input type="number" id="daysInput" value="90" style="width: 80px;" placeholder="天数">
+        <button onclick="loadData()">加载数据</button>
     </div>
+
+    <div id="chart-container">
+        <div class="loading" id="loadingText">数据加载中...</div>
+    </div>
+</div>
+
+<script>
+    let chart;
+    let areaSeries;
+
+    // 初始化图表
+    document.addEventListener('DOMContentLoaded', () => {
+        const chartContainer = document.getElementById('chart-container');
+        
+        chart = LightweightCharts.createChart(chartContainer, {
+            layout: { background: { type: 'solid', color: 'white' }, textColor: 'black' },
+            grid: { vertLines: { color: '#eee' }, horzLines: { color: '#eee' } },
+            rightPriceScale: { borderColor: '#ccc' },
+            timeScale: { borderColor: '#ccc', timeVisible: true },
+        });
+
+        // v4 版本支持这个写法
+        areaSeries = chart.addAreaSeries({
+            topColor: 'rgba(41, 98, 255, 0.56)',
+            bottomColor: 'rgba(41, 98, 255, 0.04)',
+            lineColor: 'rgba(41, 98, 255, 1)',
+            lineWidth: 2,
+        });
+
+        window.addEventListener('resize', () => {
+            if (chart) {
+                chart.applyOptions({ width: chartContainer.clientWidth, height: chartContainer.clientHeight });
+            }
+        });
+    });
+
+    // 加载数据
+    async function loadData() {
+        if (!areaSeries) return;
+
+        const equation = document.getElementById('equationInput').value;
+        const days = document.getElementById('daysInput').value;
+        const loading = document.getElementById('loadingText');
+
+        if (!equation) return alert("请输入公式！");
+
+        try {
+            loading.style.display = 'block';
+            
+            // 请求本地 API
+            const url = `http://127.0.0.1:8000/api/curveseries/history?equation=${encodeURIComponent(equation)}&days=${days}`;
+            console.log("请求 API:", url);
+
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`API 报错: ${response.status}`);
+
+            const rawData = await response.json();
+            console.log("收到数据:", rawData); // 可以在控制台看到真实数据
+
+            if (!rawData || rawData.length === 0) {
+                alert("无数据");
+                loading.style.display = 'none';
+                return;
+            }
+
+            // 数据清洗：转换时间戳
+            const chartData = rawData
+                .map(item => {
+                    const date = new Date(item.timestamp);
+                    if (isNaN(date.getTime())) return null;
+                    return {
+                        time: date.getTime() / 1000, 
+                        value: item.value
+                    };
+                })
+                .filter(item => item !== null)
+                .sort((a, b) => a.time - b.time);
+
+            // 渲染图表
+            areaSeries.setData(chartData);
+            chart.timeScale().fitContent();
+
+        } catch (err) {
+            console.error(err);
+            alert("加载失败: " + err.message);
+        } finally {
+            loading.style.display = 'none';
+        }
+    }
+</script>
+
 </body>
 </html>
