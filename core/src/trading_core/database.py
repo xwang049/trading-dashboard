@@ -107,7 +107,7 @@ class MarketDataRepository:
             # Update existing record
             existing.value = packet.value
             existing.unit = packet.unit
-            existing.metadata = packet.metadata
+            existing.extra_metadata = packet.metadata
             existing.raw_data = packet.raw_data
             self.session.flush()
             return existing
@@ -119,7 +119,7 @@ class MarketDataRepository:
                 timestamp=packet.timestamp,
                 value=packet.value,
                 unit=packet.unit,
-                metadata=packet.metadata,
+                extra_metadata=packet.metadata,
                 raw_data=packet.raw_data
             )
             self.session.add(db_data)
@@ -173,7 +173,7 @@ class MarketDataRepository:
                 value=db_data.value,
                 unit=db_data.unit or "unit",
                 raw_data=db_data.raw_data or {},
-                metadata=db_data.metadata or {}
+                metadata=db_data.extra_metadata or {}
             )
             packets.append(packet)
         
