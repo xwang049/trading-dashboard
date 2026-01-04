@@ -26,14 +26,14 @@ class MarketData(Base):
     timestamp = Column(DateTime(timezone=True), nullable=False, primary_key=True)
     value = Column(Float, nullable=False)
     unit = Column(String(50))
-    extra_metadata = Column('metadata', JSONB, default={})  # 'metadata' is mapped to column name
+    metadata = Column('metadata', JSONB, default={})  # 'metadata' is mapped to column name
     raw_data = Column(JSONB)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     __table_args__ = (
         Index('idx_market_data_ticker_time', 'ticker', 'timestamp'),
         Index('idx_market_data_source', 'source', 'timestamp'),
-        Index('idx_market_data_metadata', 'extra_metadata', postgresql_using='gin'),
+        Index('idx_market_data_metadata', 'metadata', postgresql_using='gin'),
     )
     
     def __repr__(self):
@@ -48,7 +48,7 @@ class MarketData(Base):
             'timestamp': self.timestamp.isoformat() if self.timestamp else None,
             'value': self.value,
             'unit': self.unit,
-            'metadata': self.extra_metadata,
+            'metadata': self.metadata,
             'raw_data': self.raw_data,
             'created_at': self.created_at.isoformat() if self.created_at else None,
         }
