@@ -147,7 +147,7 @@ CREATE OR REPLACE FUNCTION get_latest_value(p_ticker VARCHAR, p_source VARCHAR D
 RETURNS TABLE (
     ticker VARCHAR,
     value DOUBLE PRECISION,
-    timestamp TIMESTAMPTZ,
+    ts TIMESTAMPTZ,
     unit VARCHAR
 ) AS $$
 BEGIN
