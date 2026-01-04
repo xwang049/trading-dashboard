@@ -33,7 +33,7 @@ class MarketData(Base):
     __table_args__ = (
         Index('idx_market_data_ticker_time', 'ticker', 'timestamp'),
         Index('idx_market_data_source', 'source', 'timestamp'),
-        Index('idx_market_data_metadata', 'extra_metadata', postgresql_using='gin'),
+        Index('idx_market_data_metadata', 'metadata', postgresql_using='gin'),
     )
     
     def __repr__(self):
