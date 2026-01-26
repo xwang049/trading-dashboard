@@ -20,9 +20,6 @@ if __name__ == "__main__":
     # 设置环境变量 PYTHONPATH (Windows 用 ; 分隔)
     os.environ["PYTHONPATH"] = f"{backend_src};{connectors_src};{core_src};{os.environ.get('PYTHONPATH', '')}"
 
-    print(f"\n✅ DEBUG: 环境变量已强制注入!")
-    print(f"   Backend路径: {backend_src}")
-    
     print("\n🚀 Trading Dashboard API 正在启动...")
     print("👉 接口文档: http://127.0.0.1:8000/docs\n")
 

@@ -1,14 +1,34 @@
-# /pyproject.toml (根目录)
-
 [project]
 name = "trading-dashboard-root"
 version = "0.1.0"
-description = "Dashboard monorepo"
+description = "Trading Dashboard Monorepo Root"
+readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "python-dotenv>=1.2.1",
-    "redis>=7.1.0",
-] # 根目录通常不装代码依赖，只作为管理层
+    "uvicorn>=0.30.0",
+    "pydantic-settings>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "psutil>=5.9.0",
+    "fastapi>=0.127.0",
+    "sqlalchemy>=2.0.0",
+    "psycopg2-binary>=2.9.11",
+    "pandas>=2.0.0",  # 在根目录也声明一下，确保全局可用
+    "redis>=5.0.0",
+]
 
 [tool.uv.workspace]
 members = ["core", "connectors", "backend"]
+
+[tool.uv.sources]
+trading-core = { workspace = true }
+trading-connectors = { workspace = true }
+trading-backend = { workspace = true }
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+# 解决 Failed to build 报错的关键：
+[tool.setuptools]
+packages = []
+py-modules = []

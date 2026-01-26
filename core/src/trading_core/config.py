@@ -3,67 +3,61 @@ Configuration management for Trading Dashboard
 """
 import os
 from typing import Optional
-try:
-    from pydantic_settings import BaseSettings
-except ImportError:
-    from pydantic import BaseSettings
-
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     """Application settings loaded from environment variables"""
     
+    # 使用 Pydantic V2 推荐的 SettingsConfigDict
+    # extra="ignore" 是解决 "Extra inputs are not permitted" 报错的关键
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+        extra="ignore" 
+    )
+
     # Database Configuration
-    database_url: str = "postgresql://trader:trader123@localhost:5432/trading"
-    database_echo: bool = False  # Set to True to log SQL queries
+    database_url: str = Field(default="postgresql://trader:trader123@localhost:5432/trading")
+    database_echo: bool = Field(default=False)
     
     # Redis Configuration
-    redis_host: str = "localhost"
-    redis_port: int = 6379
-    redis_password: Optional[str] = None
-    redis_ssl: bool = False
+    redis_host: str = Field(default="localhost")
+    redis_port: int = Field(default=6379)
+    redis_password: Optional[str] = Field(default=None)
+    redis_ssl: bool = Field(default=False)
     
     # API Configuration
-    api_host: str = "127.0.0.1"
-    api_port: int = 8000
-    api_reload: bool = True
+    api_host: str = Field(default="127.0.0.1")
+    api_port: int = Field(default=8000)
+    api_reload: bool = Field(default=True)
     
     # CurveSeries Configuration
-    curveseries_enabled: bool = True
+    curveseries_enabled: bool = Field(default=True)
     
     # Logging
-    log_level: str = "INFO"
+    log_level: str = Field(default="INFO")
     
     # Environment
-    environment: str = "development"  # development, production
-    
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        case_sensitive = False
+    environment: str = Field(default="development")
 
-
-# Global settings instance
+# 全局实例
 settings = Settings()
 
-
 def get_database_url() -> str:
-    """Get database URL, supporting both sync and async drivers"""
+    """获取数据库 URL"""
     return settings.database_url
 
-
 def get_async_database_url() -> str:
-    """Get async database URL for async operations"""
+    """获取异步数据库 URL"""
     url = settings.database_url
     if url.startswith("postgresql://"):
         return url.replace("postgresql://", "postgresql+asyncpg://")
     return url
 
-
 def is_production() -> bool:
-    """Check if running in production environment"""
     return settings.environment.lower() == "production"
 
-
 def is_development() -> bool:
-    """Check if running in development environment"""
     return settings.environment.lower() == "development"
